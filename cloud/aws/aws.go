@@ -77,6 +77,38 @@ func (a *AWS) GetRegions() ([]*schema.Region, *errors.AppError) {
 	return regions, nil
 }
 
-func (a *AWS) GetVPC() ([]string, *errors.AppError) {
-	return nil, nil
+func (a *AWS) GetVPC() ([]*schema.VPC, *errors.AppError) {
+	var (
+		maxRrcCnt int64 = 100
+		err       error
+		result    *ec2.DescribeVpcsOutput
+		response  []*schema.VPC
+	)
+	input := &ec2.DescribeVpcsInput{
+		MaxResults: aws.Int64(maxRrcCnt),
+	}
+
+	for {
+		result, err = a.ec2Svc.DescribeVpcs(input)
+		if err != nil {
+			return nil, errors.InternalServer("aws.GetVPC failed to describe vpcs").AddDebug(err)
+		}
+
+		for _, vpc := range result.Vpcs {
+			response = append(response, &schema.VPC{
+				OrganizationID: a.cloudCreds.OrganizationID,
+				CloudCredsID:   a.cloudCreds.ID,
+				VPCID:          *vpc.VpcId,
+				CIDR:           *vpc.CidrBlock,
+				State:          *vpc.State,
+			})
+		}
+		if result.NextToken == nil {
+			break
+		}
+
+		input.NextToken = result.NextToken
+	}
+
+	return response, nil
 }

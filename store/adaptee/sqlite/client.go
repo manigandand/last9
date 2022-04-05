@@ -30,25 +30,19 @@ func (c *Client) Close() {
 
 func (c *Client) GetOrgByID(id uint) (*schema.Organization, *errors.AppError) {
 	var org schema.Organization
-	if err := c.db.First(&org).Where("id = ?", id); err != nil {
+	if err := c.db.First(&org).Where("id = ?", id).Error; err != nil {
 		return nil, errors.NotFound("invalid organization id")
 	}
 	return &org, nil
 }
 
-// func (c *Client) GetIntegrationByAPIKey(apiKey string) (*schema.Integration, *errors.AppError) {
-// 	if c.integration.APIKey != apiKey {
-// 		return nil, errors.NotFound("invalid integration api key")
-// 	}
-// 	return c.integration, nil
-// }
-
-// func (c *Client) GetIntegrationByID(id uint) (*schema.Integration, *errors.AppError) {
-// 	if c.integration.ID != id {
-// 		return nil, errors.NotFound("invalid integration id")
-// 	}
-// 	return c.integration, nil
-// }
+func (c *Client) GetCloudCredByID(id uint) (*schema.CloudCred, *errors.AppError) {
+	var cc schema.CloudCred
+	if err := c.db.First(&cc).Where("id = ? AND organization_id = ?", id, 1).Error; err != nil {
+		return nil, errors.NotFound("invalid cloud creds id")
+	}
+	return &cc, nil
+}
 
 // Topic ...
 func (c *Client) Regions() adapter.Regions {

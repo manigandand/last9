@@ -8,8 +8,7 @@ import (
 type Store interface {
 	Close()
 	GetOrgByID(id uint) (*schema.Organization, *errors.AppError)
-	// GetIntegrationByAPIKey(apiKey string) (*schema.Integration, *errors.AppError)
-	// GetIntegrationByID(id uint) (*schema.Integration, *errors.AppError)
+	GetCloudCredByID(id uint) (*schema.CloudCred, *errors.AppError)
 	Regions() Regions
 	VPC() VPC
 }
@@ -21,5 +20,5 @@ type Regions interface {
 
 type VPC interface {
 	// All() ([]*schema.Alert, *errors.AppError)
-	// Save(alert *schema.Alert) (*schema.Alert, *errors.AppError)
+	Save(alert []*schema.VPC) ([]*schema.VPC, *errors.AppError)
 }

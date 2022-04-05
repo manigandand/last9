@@ -33,3 +33,11 @@ type CloudCred struct {
 
 	Region string `json:"-" gorm:"-"`
 }
+
+func (c *CloudCred) SetRegion(name string) {
+	c.Region = name
+}
+
+func (c *CloudCred) GetRegion() string {
+	return c.Region
+}

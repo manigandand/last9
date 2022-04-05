@@ -23,6 +23,7 @@ func NewAdapter() adapter.Store {
 		db: db,
 	}
 	c.RegionsConn = NewRegionsStore(c)
+	c.VpcConn = NewVPCStore(c)
 
 	schemas := []struct {
 		name   string
@@ -68,7 +69,7 @@ func (c *Client) loadCloudConfig() {
 		panic(err)
 	}
 
-	cloudCreds.Region = "eu-west-3"
+	cloudCreds.SetRegion("eu-west-3")
 	ch, err := cloud.NewCloud(cloudCreds)
 	if err != nil {
 		panic(err)

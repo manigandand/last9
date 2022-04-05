@@ -9,7 +9,7 @@ import (
 type Cloud interface {
 	GetCloudType() string
 	GetRegions() ([]*schema.Region, *errors.AppError)
-	GetVPC() ([]string, *errors.AppError)
+	GetVPC() ([]*schema.VPC, *errors.AppError)
 }
 
 func NewCloud(cloudCreds *schema.CloudCred) (Cloud, *errors.AppError) {
