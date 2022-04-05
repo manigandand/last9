@@ -36,8 +36,9 @@ notes/
 .vscode
 
 # Vendor Packages
-vendor/
+# vendor/
+config.json
+*.json
 
 # Build Binaries
-
 last9

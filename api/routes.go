@@ -1,8 +1,6 @@
 package api
 
 import (
-	"last9/cloud"
-	"last9/cloud/aws"
 	"last9/errors"
 	"last9/response"
 	"last9/schema"
@@ -21,17 +19,16 @@ func Routes(router chi.Router) {
 func InitV1Routes(r chi.Router) {
 	// r.Method(http.MethodPost, "/{version}/alert/{slug}/{apiKey}", Handler(handleEvent))
 	// r.Method(http.MethodGet, "/v1/alert-sources", Handler(getAllAlertSources))
-	r.Method(http.MethodGet, "/v1/regions", Handler(getAllAlerts))
+	r.Method(http.MethodGet, "/v1/{cloud_type}/regions", Handler(getAllAlerts))
 }
 
 func getAllAlerts(w http.ResponseWriter, r *http.Request) *errors.AppError {
-	ch, err := cloud.NewCloud(schema.CloudTypeAWS, &aws.Options{
-		Region: "eu-west-3",
-	})
-	if err != nil {
-		return err
+	cloudType := chi.URLParam(r, "cloud_type")
+	if ok := schema.ValidClouds[cloudType]; !ok {
+		return errors.BadRequest("invalid cloud type")
 	}
-	regions, err := ch.GetRegions()
+
+	regions, err := store.Regions().All()
 	if err != nil {
 		return err
 	}

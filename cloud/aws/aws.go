@@ -18,38 +18,37 @@ type Options struct {
 }
 
 type AWS struct {
-	region    string
-	ec2Svc    *ec2.EC2
-	eksSvc    *eks.EKS
-	iamSvc    *iam.IAM
-	s3Svc     *s3.S3
-	sess      *session.Session
-	apiKey    string
-	secretKey string
+	region     string
+	ec2Svc     *ec2.EC2
+	eksSvc     *eks.EKS
+	iamSvc     *iam.IAM
+	s3Svc      *s3.S3
+	sess       *session.Session
+	cloudCreds *schema.CloudCred
+	apiKey     string
+	secretKey  string
 }
 
 // New - create a new AWS client
-func NewOrchestrator(opt *Options) (*AWS, *errors.AppError) {
-	primaryApiKey := ""
-	primarySecretKey := "/"
-
+func NewOrchestrator(cloudCreds *schema.CloudCred) (*AWS, *errors.AppError) {
 	primaryConfig := aws.NewConfig().
-		WithRegion(opt.Region).
-		WithCredentials(credentials.NewStaticCredentials(primaryApiKey, primarySecretKey, ""))
+		WithRegion(cloudCreds.Region).
+		WithCredentials(credentials.NewStaticCredentials(cloudCreds.APIKey, cloudCreds.SecretKey, ""))
 	sess, err := session.NewSession(primaryConfig)
 	if err != nil {
 		return nil, errors.InternalServer("aws.NewOrchestrator failed to create session").AddDebug(err)
 	}
 
 	return &AWS{
-		region:    opt.Region,
-		ec2Svc:    ec2.New(sess),
-		eksSvc:    eks.New(sess),
-		iamSvc:    iam.New(sess),
-		s3Svc:     s3.New(sess),
-		sess:      sess,
-		apiKey:    primaryApiKey,
-		secretKey: primarySecretKey,
+		region:     cloudCreds.Region,
+		ec2Svc:     ec2.New(sess),
+		eksSvc:     eks.New(sess),
+		iamSvc:     iam.New(sess),
+		s3Svc:      s3.New(sess),
+		sess:       sess,
+		cloudCreds: cloudCreds,
+		apiKey:     cloudCreds.APIKey,
+		secretKey:  cloudCreds.SecretKey,
 	}, nil
 }
 
@@ -57,8 +56,8 @@ func (a *AWS) GetCloudType() string {
 	return schema.CloudTypeAWS.String()
 }
 
-func (a *AWS) GetRegions() ([]string, *errors.AppError) {
-	regions := []string{}
+func (a *AWS) GetRegions() ([]*schema.Region, *errors.AppError) {
+	regions := []*schema.Region{}
 	input := &ec2.DescribeRegionsInput{
 		AllRegions: aws.Bool(true),
 	}
@@ -67,7 +66,13 @@ func (a *AWS) GetRegions() ([]string, *errors.AppError) {
 		return nil, errors.InternalServer("aws.GetRegions failed to describe regions").AddDebug(err)
 	}
 	for _, region := range result.Regions {
-		regions = append(regions, *region.RegionName)
+		regions = append(regions, &schema.Region{
+			OrganizationID: a.cloudCreds.OrganizationID,
+			CloudCredsID:   a.cloudCreds.ID,
+			Name:           *region.RegionName,
+			Endpoint:       *region.Endpoint,
+			OptInStatus:    *region.OptInStatus,
+		})
 	}
 	return regions, nil
 }

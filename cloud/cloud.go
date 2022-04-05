@@ -8,14 +8,14 @@ import (
 
 type Cloud interface {
 	GetCloudType() string
-	GetRegions() ([]string, *errors.AppError)
+	GetRegions() ([]*schema.Region, *errors.AppError)
 	GetVPC() ([]string, *errors.AppError)
 }
 
-func NewCloud(ctype schema.Cloudtype, opt *aws.Options) (Cloud, *errors.AppError) {
-	switch ctype {
+func NewCloud(cloudCreds *schema.CloudCred) (Cloud, *errors.AppError) {
+	switch cloudCreds.Type {
 	case schema.CloudTypeAWS:
-		return aws.NewOrchestrator(opt)
+		return aws.NewOrchestrator(cloudCreds)
 	case schema.CloudTypeGCP:
 		return nil, errors.BadRequest("gcp not implemented")
 	case schema.CloudTypeAzure:
