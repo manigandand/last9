@@ -37,8 +37,6 @@ notes/
 
 # Vendor Packages
 # vendor/
-config.json
-*.json
 
 # Build Binaries
 last9

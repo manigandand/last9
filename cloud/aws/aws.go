@@ -77,7 +77,7 @@ func (a *AWS) GetRegions() ([]*schema.Region, *errors.AppError) {
 	return regions, nil
 }
 
-func (a *AWS) GetVPC() ([]*schema.VPC, *errors.AppError) {
+func (a *AWS) DiscoverVPC() ([]*schema.VPC, *errors.AppError) {
 	var (
 		maxRrcCnt int64 = 100
 		err       error
@@ -102,6 +102,57 @@ func (a *AWS) GetVPC() ([]*schema.VPC, *errors.AppError) {
 				CIDR:           *vpc.CidrBlock,
 				State:          *vpc.State,
 			})
+		}
+		if result.NextToken == nil {
+			break
+		}
+
+		input.NextToken = result.NextToken
+	}
+
+	return response, nil
+}
+
+func (a *AWS) DiscoverInstances() ([]*schema.EC2Instance, *errors.AppError) {
+	var (
+		maxRrcCnt int64 = 100
+		err       error
+		result    *ec2.DescribeInstancesOutput
+		response  []*schema.EC2Instance
+	)
+
+	input := &ec2.DescribeInstancesInput{
+		MaxResults: &maxRrcCnt,
+		// Filters: []*ec2.Filter{
+		// 	{
+		// 		Name: aws.String("vpc-id"),
+		// 		Values: []*string{
+		// 			aws.String(vpcID),
+		// 		},
+		// 	},
+		// },
+	}
+
+	for {
+		result, err = a.ec2Svc.DescribeInstances(input)
+		if err != nil {
+			return nil, errors.InternalServer("aws failed to discover instances").AddDebug(err)
+		}
+
+		for _, r := range result.Reservations {
+			for _, inst := range r.Instances {
+				response = append(response, &schema.EC2Instance{
+					OrganizationID:   a.cloudCreds.OrganizationID,
+					CloudCredsID:     a.cloudCreds.ID,
+					InstanceID:       *inst.InstanceId,
+					State:            *inst.State.Name,
+					VPCID:            *inst.VpcId,
+					SubnetID:         *inst.SubnetId,
+					AvailabilityZone: *inst.Placement.AvailabilityZone,
+					PrivateIpAddress: *inst.PrivateIpAddress,
+					PublicIpAddress:  *inst.PublicIpAddress,
+				})
+			}
 		}
 		if result.NextToken == nil {
 			break

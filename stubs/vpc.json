@@ -1,0 +1,46 @@
+{
+    "Vpcs": [
+        {
+            "CidrBlock": "172.31.0.0/16",
+            "DhcpOptionsId": "dopt-0dbad6439e170e2f9",
+            "State": "available",
+            "VpcId": "vpc-07ad51c832db95af4",
+            "OwnerId": "651521144954",
+            "InstanceTenancy": "default",
+            "CidrBlockAssociationSet": [
+                {
+                    "AssociationId": "vpc-cidr-assoc-0bb7a6d1cd4bc76e2",
+                    "CidrBlock": "172.31.0.0/16",
+                    "CidrBlockState": {
+                        "State": "associated"
+                    }
+                }
+            ],
+            "IsDefault": true
+        },
+        {
+            "CidrBlock": "10.0.0.0/16",
+            "DhcpOptionsId": "dopt-0dbad6439e170e2f9",
+            "State": "available",
+            "VpcId": "vpc-05c64b7acf51c07c2",
+            "OwnerId": "651521144954",
+            "InstanceTenancy": "dedicated",
+            "CidrBlockAssociationSet": [
+                {
+                    "AssociationId": "vpc-cidr-assoc-02d603f99574ae032",
+                    "CidrBlock": "10.0.0.0/16",
+                    "CidrBlockState": {
+                        "State": "associated"
+                    }
+                }
+            ],
+            "IsDefault": false,
+            "Tags": [
+                {
+                    "Key": "Owner",
+                    "Value": "manigandand"
+                }
+            ]
+        }
+    ]
+}
