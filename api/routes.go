@@ -5,6 +5,7 @@ import (
 	"last9/errors"
 	"last9/response"
 	"last9/schema"
+	"last9/task"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -106,6 +107,8 @@ func discoverInstancesByRegion(w http.ResponseWriter, r *http.Request) *errors.A
 	if err != nil {
 		return err
 	}
+
+	go task.New(task.EventTypeNewInstance).Dispatch()
 
 	response.OK(w, ec2InstsRes)
 	return nil

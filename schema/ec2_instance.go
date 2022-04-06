@@ -1,5 +1,10 @@
 package schema
 
+const (
+	EC2InstanceStatePending = "pending"
+	EC2InstanceStateRunning = "running"
+)
+
 type EC2Instance struct {
 	BaseModel
 

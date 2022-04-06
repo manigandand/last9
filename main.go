@@ -6,6 +6,7 @@ import (
 	"last9/config"
 	appmiddleware "last9/middleware"
 	"last9/store"
+	"last9/task"
 	"net/http"
 	"os/signal"
 	"syscall"
@@ -32,6 +33,7 @@ func main() {
 	config.Initialize(os.Args[1:]...)
 	store.Init()
 	api.InitAPI(name, version)
+	task.Init()
 
 	router := chi.NewRouter()
 	cors := cors.New(cors.Options{
