@@ -24,6 +24,7 @@ func NewAdapter() adapter.Store {
 	}
 	c.RegionsConn = NewRegionsStore(c)
 	c.VpcConn = NewVPCStore(c)
+	c.EC2InstConn = NewEC2InstStore(c)
 
 	schemas := []struct {
 		name   string
@@ -33,6 +34,7 @@ func NewAdapter() adapter.Store {
 		{"cloud_creds", &schema.CloudCred{}},
 		{"regions", &schema.Region{}},
 		{"vpcs", &schema.VPC{}},
+		{"ec2_instances", &schema.EC2Instance{}},
 	}
 	for _, table := range schemas {
 		if err := db.AutoMigrate(table.schema); err != nil {

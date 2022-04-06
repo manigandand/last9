@@ -11,6 +11,7 @@ type Store interface {
 	GetCloudCredByID(id uint) (*schema.CloudCred, *errors.AppError)
 	Regions() Regions
 	VPC() VPC
+	EC2Instances() EC2Instances
 }
 
 type Regions interface {
@@ -19,6 +20,10 @@ type Regions interface {
 }
 
 type VPC interface {
-	// All() ([]*schema.Alert, *errors.AppError)
 	Save(alert []*schema.VPC) ([]*schema.VPC, *errors.AppError)
+}
+
+type EC2Instances interface {
+	All() ([]*schema.EC2Instance, *errors.AppError)
+	Save(alert []*schema.EC2Instance) ([]*schema.EC2Instance, *errors.AppError)
 }

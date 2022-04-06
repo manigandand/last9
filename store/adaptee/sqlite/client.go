@@ -16,13 +16,15 @@ type Client struct {
 	// alerts          []*schema.Alert
 	RegionsConn adapter.Regions
 	VpcConn     adapter.VPC
+	EC2InstConn adapter.EC2Instances
 }
 
 func (c *Client) Close() {
 	c.db.Migrator().DropTable(&schema.Organization{})
 	c.db.Migrator().DropTable(&schema.CloudCred{})
 	c.db.Migrator().DropTable(&schema.Region{})
-	// c.db.Migrator().DropTable(&schema.VPC{})
+	c.db.Migrator().DropTable(&schema.VPC{})
+	c.db.Migrator().DropTable(&schema.EC2Instance{})
 
 	db, _ := c.db.DB()
 	db.Close()
@@ -52,4 +54,8 @@ func (c *Client) Regions() adapter.Regions {
 // Alerts ...
 func (c *Client) VPC() adapter.VPC {
 	return c.VpcConn
+}
+
+func (c *Client) EC2Instances() adapter.EC2Instances {
+	return c.EC2InstConn
 }

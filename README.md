@@ -25,6 +25,34 @@ go build && ./last9 config.json
 
 > API's
 
+> Discover ec2 instances
+> `GET localhost:8080/v1/aws/eu-west-3/instances`
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "created_at": "2022-04-06T13:53:43.850586+05:30",
+      "updated_at": "2022-04-06T13:53:43.850586+05:30",
+      "deleted_at": null,
+      "organization_id": 1,
+      "cloud_creds_id": 1,
+      "instance_id": "i-014087f64fe2a4a23",
+      "state": "running",
+      "vpc_id": "vpc-07ad51c832db95af4",
+      "subnet_id": "subnet-0a8920b561648eccc",
+      "availability_zone": "eu-west-3a",
+      "private_ip_address": "172.31.13.97",
+      "public_ip_address": "35.180.187.164"
+    }
+  ],
+  "meta": {
+    "status_code": 200
+  }
+}
+```
+
 > Discover vpcs in region
 > `GET localhost:8080/v1/{aws}/{us-west-2}/vpcs`
 
@@ -302,4 +330,19 @@ go build && ./last9 config.json
     "status_code": 200
   }
 }
+```
+
+```
+aws ec2 create-vpc \
+    --cidr-block 10.0.0.0/16 \
+    --instance-tenancy dedicated \
+    --tag-specifications ResourceType=vpc,Tags='[{Key=Owner,Value="manigandand"}]'
+
+
+aws ec2 run-instances \
+    --image-id ami-000037ee86985ff3b \
+    --instance-type t2.micro \
+    --subnet-id subnet-0a8920b561648eccc \
+    --count 1 \
+    --tag-specifications 'ResourceType=instance,Tags=[{Key=owner,Value=manigandand}]' 'ResourceType=volume,Tags=[{Key=cost-center,Value=cc123}]'
 ```
