@@ -10,11 +10,17 @@
 --- response: custom http response pkg
 --- schema: db schema
 --- store: data store layer
---- task: worker.
-
+--- task: task worker pool maintainer & dispatcher.
+    --- worker: sub workers which subscribed to events and does the specfic jobs.
 ```
 
 > How to run
+
+`make run`
+
+> darwin build
+
+or
 
 ```
 Just build and run.
