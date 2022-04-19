@@ -10,17 +10,18 @@ import (
 )
 
 func main() {
+	//
 	ctx, ctxCancel := context.WithCancel(context.Background())
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 	go func() {
-		fmt.Println("waiting for Interrupt signal")
+		// fmt.Println("waiting for Interrupt signal")
 		<-ch
-		fmt.Println("Interrupt received")
+		// fmt.Println("Interrupt received")
 		ctxCancel()
-		fmt.Println("Good Bye!")
-		os.Exit(0)
+		// fmt.Println("Good Bye!")
+		// os.Exit(0)
 	}()
 
 	num := 10
@@ -35,19 +36,18 @@ func main() {
 }
 
 func cpuBound(n int, ctx context.Context, wg *sync.WaitGroup) {
-	go func() {
-		fmt.Println("waiting for done for ", n)
+	go func(ctx context.Context) {
 		for {
-			select { // its a buffered or unbuffered??
+			select {
 			case <-ctx.Done():
 				wg.Done()
 				fmt.Println("Good Bye!", n)
 				return
 			}
 		}
-	}()
+	}(ctx)
 
-	fmt.Println("CPU bound:", n)
+	fmt.Println("Running CPU bound:", n)
 	f, err := os.Open(os.DevNull)
 	if err != nil {
 		panic(err)
